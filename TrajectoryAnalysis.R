@@ -149,6 +149,7 @@
           set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
           seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
+          # seuratObject@reductions[["umap"]]@cell.embeddings <- seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]]
           
           Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
           p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
