@@ -110,35 +110,75 @@
     seuratObject <- FindNeighbors(seuratObject, dims = 1:100)
     seuratObject <- FindClusters(seuratObject, resolution = 0.5)
     
+    ## Export PDF
     pdf(file = paste0(Save.Path,"/",ProjectName,"_Trajectory_All.pdf"),
         width = 20,  height = 12
     )
     for (i in 5:5) {
-      for (j in 1:20) {
-        for (k in 1:50) {
-          seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.05)
-          seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.05)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
+      for (j in 1:10) {
+        for (k in 1:40) {
+          seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
+          seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
           
           Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
           p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-            ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.05)) + 
+            ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           print(p)
           
           Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
           p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-            ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.05)) + 
-            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
+            ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           print(p)
           p <-  FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
-                      ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.05)) + 
-                      theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
+                      ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+                      theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           print(p)
           
         }
       }
     }
     dev.off()
+    
+    ## Export TIFF
+    for (i in 5:5) {
+      for (j in 1:10) {
+        for (k in 1:40) {
+          seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
+          seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
+          
+          Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
+          p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+            ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+          tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_CellType.tiff"),
+               width = 20, height = 12)
+            print(p)
+          graphics.off()
+          
+          Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
+          p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+            ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+          tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_ReCluster.tiff"),
+               width = 20, height = 12)
+            print(p)
+          graphics.off()
+          
+          p <-  FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
+            ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+          tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_TOP2A.tiff"),
+               width = 20, height = 12)
+            print(p)
+          graphics.off()
+          
+        }
+      }
+    }
+
+    
 
     # seuratObject <- RunUMAP(seuratObject, dims = 1:100,n.neighbors = 20, min.dist=0.05)
     # # seuratObject <- RunUMAP(seuratObject, dims = 1:100,n.neighbors = 1000, min.dist=0.1)
