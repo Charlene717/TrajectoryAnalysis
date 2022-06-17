@@ -156,7 +156,7 @@
             ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_CellType.tiff"),
-               width = 20, height = 12, units = "cm", res = 200)
+               width = 28, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
           
@@ -165,7 +165,7 @@
             ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_ReCluster.tiff"),
-               width = 20, height = 12, units = "cm", res = 200)
+               width = 35, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
           
@@ -173,7 +173,7 @@
             ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCAi",20*i,"_NNei",k*5,"_MD",j*0.1,"_TOP2A.tiff"),
-               width = 20, height = 12, units = "cm", res = 200)
+               width = 28, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
           
