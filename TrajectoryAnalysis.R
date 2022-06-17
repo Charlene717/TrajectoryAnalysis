@@ -117,6 +117,7 @@
     for (i in 5:5) {
       for (j in 1:10) {
         for (k in 1:40) {
+          set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
           seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
           
@@ -145,6 +146,7 @@
     for (i in 5:5) {
       for (j in 1:10) {
         for (k in 1:40) {
+          set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
           seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
           
