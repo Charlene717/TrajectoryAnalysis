@@ -66,20 +66,35 @@
     load("SeuratObject_PRJCA001063.RData")
     load("H5AD_PRJCA001063_PDAC_CleanUpS_20220525.RData")
 
-    seuratObject_Ori <- seuratObject
     seurat_meta.df <- seuratObject@meta.data
     cds_meta.df <- as.data.frame(cds@colData@listData)
-    seurat_meta.df <- left_join(seurat_meta.df, cds_meta.df)
+    seurat_meta.df <- inner_join(seurat_meta.df, cds_meta.df)
     #seurat_meta.df[is.na(seurat_meta.df)] <- 0
     row.names(seurat_meta.df) <- seurat_meta.df[,1]
     seuratObject@meta.data <- seurat_meta.df
-
+    DimPlot(seuratObject, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
+    DimPlot(seuratObject, reduction = "umap",group.by = "ReCluster", label = TRUE, pt.size = 0.5) + NoLegend()
+    
+    sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1")
+    sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2")
+    seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1"]
+    seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2"]
+    
+    seuratObject@meta.data[["ReCluster2"]] <- seuratObject@meta.data[["ReCluster"]]
+    seuratObject@meta.data[["ReCluster"]] <- gsub(" ", "_", seuratObject@meta.data[["ReCluster"]])
+    seuratObject@meta.data[["ReCluster"]] <- gsub("DistalCD", "MDO", seuratObject@meta.data[["ReCluster"]])
+    seuratObject@meta.data[["ReCluster"]] <- gsub("CoreCD", "MDC", seuratObject@meta.data[["ReCluster"]])
+    seuratObject@meta.data[["ReCluster"]] <- gsub("CDOri", "MD00", seuratObject@meta.data[["ReCluster"]])
+    
+    ## Modify the cell type name
+    
+    
     seuratObjectMono_Ori <- seuratObject
-
+    
     library("stringr")
     rm(list=setdiff(ls(), str_subset(objects(), pattern = "seuratObject")))
     save.image("SeuratObject_CDS_PRJCA001063.RData")
-
+    
 # #### Load data #####
     load("SeuratObject_CDS_PRJCA001063.RData")
 
@@ -110,37 +125,37 @@
     seuratObject <- FindNeighbors(seuratObject, dims = 1:100)
     seuratObject <- FindClusters(seuratObject, resolution = 0.5)
     
-    ## Export PDF
-    pdf(file = paste0(Save.Path,"/",ProjectName,"_Trajectory_All.pdf"),
-        width = 20,  height = 12
-    )
-    for (i in 5:5) {
-      for (j in 1:10) {
-        for (k in 1:40) {
-          set.seed(1)
-          seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
-          seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
-          
-          Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
-          p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-            ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
-            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
-          print(p)
-          
-          Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
-          p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-            ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
-            theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
-          print(p)
-          p <-  FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
-                      ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
-                      theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
-          print(p)
-          
-        }
-      }
-    }
-    dev.off()
+    # ## Export PDF
+    # pdf(file = paste0(Save.Path,"/",ProjectName,"_Trajectory_All.pdf"),
+    #     width = 20,  height = 12
+    # )
+    # for (i in 5:5) {
+    #   for (j in 1:10) {
+    #     for (k in 1:40) {
+    #       set.seed(1)
+    #       seuratObject <- RunUMAP(seuratObject, dims = 1:(20*i),n.neighbors = k*5, min.dist= j*0.1)
+    #       seuratObject@meta.data[[paste0("UMAP_PCA",20*i,"_NNei",k*5,"_MD03",j*0.1)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
+    #       
+    #       Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
+    #       p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+    #         ggtitle(paste0("CellType","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+    #         theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+    #       print(p)
+    #       
+    #       Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
+    #       p <-  DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+    #         ggtitle(paste0("ReCluster","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+    #         theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+    #       print(p)
+    #       p <-  FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
+    #                   ggtitle(paste0("TOP2A","  PCAi:",20*i,"  NNei:",k*5,"  MD:",j*0.1)) + 
+    #                   theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
+    #       print(p)
+    #       
+    #     }
+    #   }
+    # }
+    # dev.off()
     
     ## Export TIFF
     for (i in 5:5) {
@@ -200,7 +215,7 @@
 
     
 #### Save RData #####    
-  save.image("SeuratObject_CDS_PRJCA001063_TrajAna.RData")
+  save.image(Save.Path,"/",Version,"SeuratObject_CDS_PRJCA001063_TrajAna.RData")
     
 # #### Cell type markers #####
 #     ## Create cell type markers dataframe
