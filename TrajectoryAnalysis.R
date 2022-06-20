@@ -102,7 +102,7 @@
   source("FUN_Beautify_ggplot.R") 
     
 
-#### Plot UMAP #####
+#### Re-dimension reduction and Plot UMAP #####
     pdf(file = paste0(Save.Path,"/",ProjectName,"_TrajectoryOri.pdf"),
         width = 20,  height = 12
     )
