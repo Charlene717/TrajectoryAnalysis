@@ -47,39 +47,39 @@
   # library(SingleR)
   
   
-#### Original data preprocessing #####
-  load("SeuratObject_PRJCA001063.RData")
-  load("H5AD_PRJCA001063_PDAC_CleanUpS_20220525.RData")
-  
-  seurat_meta.df <- seuratObject@meta.data
-  cds_meta.df <- as.data.frame(cds@colData@listData)
-  seurat_meta.df <- inner_join(seurat_meta.df, cds_meta.df)
-  #seurat_meta.df[is.na(seurat_meta.df)] <- 0
-  row.names(seurat_meta.df) <- seurat_meta.df[,1]
-  seuratObject@meta.data <- seurat_meta.df
-  DimPlot(seuratObject, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
-  DimPlot(seuratObject, reduction = "umap",group.by = "ReCluster", label = TRUE, pt.size = 0.5) + NoLegend()
-  
-  sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1")
-  sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2")
-  seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1"]
-  seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2"]
-  
-  seuratObject@meta.data[["ReCluster2"]] <- seuratObject@meta.data[["ReCluster"]]
-  seuratObject@meta.data[["ReCluster"]] <- gsub(" ", "_", seuratObject@meta.data[["ReCluster"]])
-  seuratObject@meta.data[["ReCluster"]] <- gsub("DistalCD", "MDO", seuratObject@meta.data[["ReCluster"]])
-  seuratObject@meta.data[["ReCluster"]] <- gsub("CoreCD", "MDC", seuratObject@meta.data[["ReCluster"]])
-  seuratObject@meta.data[["ReCluster"]] <- gsub("CDOri", "MD00", seuratObject@meta.data[["ReCluster"]])
-  
-  ## Modify the cell type name
-  
-  
-  seuratObjectMono_Ori <- seuratObject
-  
-  library("stringr")
-  rm(list=setdiff(ls(), str_subset(objects(), pattern = "seuratObject")))
-  save.image("SeuratObject_CDS_PRJCA001063.RData")
-  
+# #### Original data preprocessing #####
+#   load("SeuratObject_PRJCA001063.RData")
+#   load("H5AD_PRJCA001063_PDAC_CleanUpS_20220525.RData")
+#   
+#   seurat_meta.df <- seuratObject@meta.data
+#   cds_meta.df <- as.data.frame(cds@colData@listData)
+#   seurat_meta.df <- inner_join(seurat_meta.df, cds_meta.df)
+#   #seurat_meta.df[is.na(seurat_meta.df)] <- 0
+#   row.names(seurat_meta.df) <- seurat_meta.df[,1]
+#   seuratObject@meta.data <- seurat_meta.df
+#   DimPlot(seuratObject, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
+#   DimPlot(seuratObject, reduction = "umap",group.by = "ReCluster", label = TRUE, pt.size = 0.5) + NoLegend()
+#   
+#   sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1")
+#   sum(seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2")
+#   seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 1"]
+#   seuratObject <- seuratObject[,!seuratObject@meta.data[["ReCluster"]] == "Ductal cell type 2"]
+#   
+#   seuratObject@meta.data[["ReCluster2"]] <- seuratObject@meta.data[["ReCluster"]]
+#   seuratObject@meta.data[["ReCluster"]] <- gsub(" ", "_", seuratObject@meta.data[["ReCluster"]])
+#   seuratObject@meta.data[["ReCluster"]] <- gsub("DistalCD", "MDO", seuratObject@meta.data[["ReCluster"]])
+#   seuratObject@meta.data[["ReCluster"]] <- gsub("CoreCD", "MDC", seuratObject@meta.data[["ReCluster"]])
+#   seuratObject@meta.data[["ReCluster"]] <- gsub("CDOri", "MD00", seuratObject@meta.data[["ReCluster"]])
+#   
+#   ## Modify the cell type name
+#   
+#   
+#   seuratObjectMono_Ori <- seuratObject
+#   
+#   library("stringr")
+#   rm(list=setdiff(ls(), str_subset(objects(), pattern = "seuratObject")))
+#   save.image("SeuratObject_CDS_PRJCA001063.RData")
+#   
 # #### Load data #####
   load("SeuratObject_CDS_PRJCA001063.RData")
   
