@@ -133,9 +133,9 @@
     # pdf(file = paste0(Save.Path,"/",ProjectName,"_Trajectory_All.pdf"),
     #     width = 20,  height = 12
     # )
-    # for (i in seq(40,400,40)) {
+    # for (i in seq(80,400,80)) {
     #   for (j in seq(0.1,0.6,0.1)) {
-    #     for (k in seq(40,400,40)) {
+    #     for (k in seq(80,400,80)) {
     #       set.seed(1)
     #       seuratObject <- RunUMAP(seuratObject, dims = 1:i,n.neighbors = k, min.dist= j)
     #       seuratObject@meta.data[[paste0("UMAP_PCA",i,"_NNei",k,"_MD03",j)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
@@ -162,9 +162,9 @@
     # dev.off()
     
     ## Export TIFF
-    for (i in seq(40,400,40)) {
+    for (i in seq(80,400,80)) {
       for (j in seq(0.1,0.6,0.1)) {
-        for (k in seq(40,400,40)) {
+        for (k in seq(80,400,80)) {
           set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:i,n.neighbors = k, min.dist= j)
           seuratObject@meta.data[[paste0("UMAP_PCA",i,"_NNei",k,"_MD03",j)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
