@@ -102,7 +102,7 @@
   source("FUN_Beautify_ggplot.R") 
     
 
-#### Re-dimension reduction and Plot UMAP #####
+#### Plot UMAP #####
     pdf(file = paste0(Save.Path,"/",ProjectName,"_TrajectoryOri.pdf"),
         width = 20,  height = 12
     )
@@ -163,8 +163,9 @@
     
     ## Export TIFF
     for (i in seq(80,400,80)) {
-      for (j in seq(0.1,0.6,0.1)) {
-        for (k in seq(80,400,80)) {
+      for (j in seq(0.1,0.9,0.2)) {
+        for (k in seq(20,800,60)) {
+          try({
           set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:i,n.neighbors = k, min.dist= j)
           seuratObject@meta.data[[paste0("UMAP_PCA",i,"_NNei",k,"_MD03",j)]] <- seuratObject@reductions[["umap"]]@cell.embeddings
@@ -195,7 +196,7 @@
                width = 28, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
-          
+          })
         }
       }
     }
@@ -219,7 +220,7 @@
 
     
 #### Save RData #####    
-  save.image(Save.Path,"/",Version,"SeuratObject_CDS_PRJCA001063_TrajAna.RData")
+  save.image(paste0(Save.Path,"/SeuratObject_CDS_PRJCA001063_TrajAna.RData"))
     
 # #### Cell type markers #####
 #     ## Create cell type markers dataframe
