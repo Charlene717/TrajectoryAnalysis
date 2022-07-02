@@ -121,9 +121,11 @@
                   theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
     dev.off()
     
-    # Re-dimension reduction
+    #### Re-dimension reduction ####
     # seuratObject <- FindVariableFeatures(seuratObject, selection.method = "vst", nfeatures = 2000)
     seuratObject <- FindVariableFeatures(seuratObject)
+    # # Run the standard workflow for visualization and clustering
+    # seuratObject <- ScaleData(seuratObject, verbose = FALSE)
     seuratObject <- RunPCA(seuratObject,npcs = 1000, features = VariableFeatures(object = seuratObject))
     ElbowPlot(seuratObject, ndims = 1000)
     seuratObject <- FindNeighbors(seuratObject, dims = 1:1000)
