@@ -58,9 +58,11 @@ if(!require(remotes)){ install.packages("remotes")}  # If not already installed;
   swne.embedding4 <- RunSWNE(obj, k = 50,dist.metric = "euclidean", genes.embed = genes.embed)
   swne.embedding5 <- RunSWNE(obj, k = 25,dist.metric = "euclidean", genes.embed = genes.embed)
   swne.embedding6 <- RunSWNE(obj, k = 25,n_pull = 10,dist.metric = "euclidean", genes.embed = genes.embed)
+  swne.embedding7 <- RunSWNE(obj, k = 25,n.cores = 20,dist.metric = "euclidean", genes.embed = genes.embed)
+  swne.embedding8 <- RunSWNE(obj, k = 25,proj.method = "umap",dist.use = "euclidean", genes.embed = genes.embed)
   
   ## Plot SWNE
-  PlotSWNE(swne.embedding5, alpha.plot = 0.4, sample.groups = clusters,
+  PlotSWNE(swne.embedding6, alpha.plot = 0.4, sample.groups = clusters,
            do.label = T, label.size = 3.5, pt.size = 1.5, show.legend = F,
            seed = 42)
     
