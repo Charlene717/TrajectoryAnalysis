@@ -81,8 +81,10 @@
 #   save.image("SeuratObject_CDS_PRJCA001063.RData")
 #   
 # #### Load data #####
-  load("SeuratObject_CDS_PRJCA001063.RData")
-  
+  # load("SeuratObject_CDS_PRJCA001063.RData")
+  load("scRNA.SeuObj_CDS_PRJCA001063_Combine_ReBEC_Ori.RData")
+  seuratObject <- scRNA.SeuObj
+  rm(scRNA.SeuObj,pbmc)
   
 ##### Current path and new folder setting* #####
   ProjectName = "TrajAna_PCA"
@@ -126,9 +128,9 @@
     seuratObject <- FindVariableFeatures(seuratObject)
     # # Run the standard workflow for visualization and clustering
     # seuratObject <- ScaleData(seuratObject, verbose = FALSE)
-    seuratObject <- RunPCA(seuratObject,npcs = 1000, features = VariableFeatures(object = seuratObject))
-    ElbowPlot(seuratObject, ndims = 1000)
-    seuratObject <- FindNeighbors(seuratObject, dims = 1:1000)
+    seuratObject <- RunPCA(seuratObject,npcs = 400, features = VariableFeatures(object = seuratObject))
+    ElbowPlot(seuratObject, ndims = 400)
+    seuratObject <- FindNeighbors(seuratObject, dims = 1:400)
     seuratObject <- FindClusters(seuratObject, resolution = 0.5)
     
     # ## Export PDF
@@ -164,9 +166,9 @@
     # dev.off()
     
     ## Export TIFF
-    for (i in seq(80,400,80)) {
-      for (j in seq(0.1,0.9,0.2)) {
-        for (k in seq(20,800,60)) {
+    for (i in seq(40,400,60)) {
+      for (j in c(0.001,0.005,0.01,0.1,0.3,0.5)) {  #  seq(0.01,0.5,0.1)
+        for (k in c(seq(5,50,10),50)) {
           try({
           set.seed(1)
           seuratObject <- RunUMAP(seuratObject, dims = 1:i,n.neighbors = k, min.dist= j)
