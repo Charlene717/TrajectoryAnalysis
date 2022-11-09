@@ -105,23 +105,23 @@
     
 
 #### Plot UMAP #####
-    pdf(file = paste0(Save.Path,"/",ProjectName,"_TrajectoryOri.pdf"),
-        width = 20,  height = 12
-    )
-      Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
-      DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-        ggtitle(paste0("CellType","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
-        theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
-      
-      Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
-      DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
-        ggtitle(paste0("ReCluster","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
-        theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
-      
-      FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
-                  ggtitle(paste0("TOP2A","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
-                  theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
-    dev.off()
+    # pdf(file = paste0(Save.Path,"/",ProjectName,"_TrajectoryOri.pdf"),
+    #     width = 20,  height = 12
+    # )
+    #   Idents(seuratObject) <- seuratObject@meta.data[["Cell_type"]]
+    #   DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+    #     ggtitle(paste0("CellType","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
+    #     theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
+    #   
+    #   Idents(seuratObject) <- seuratObject@meta.data[["ReCluster"]]
+    #   DimPlot(seuratObject, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend() %>% BeautifyggPlot(LegPos = c(1.02, 0.5)) +
+    #     ggtitle(paste0("ReCluster","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
+    #     theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
+    #   
+    #   FeaturePlot(seuratObject, features = c("TOP2A")) %>% BeautifyggPlot(LegPos = c(1.02, 0.15)) +
+    #               ggtitle(paste0("TOP2A","  PCA:",100,"  NNe:",20,"  MD:",0.3)) + 
+    #               theme(plot.title = element_text(hjust = 0.5,vjust = 0)) %>% print()
+    # dev.off()
     
     #### Re-dimension reduction ####
     # seuratObject <- FindVariableFeatures(seuratObject, selection.method = "vst", nfeatures = 2000)
