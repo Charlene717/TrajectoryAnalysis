@@ -169,7 +169,7 @@
     # dev.off()
     
     ## Export TIFF
-    for (i in seq(45,100,5)) {
+    for (i in seq(15,100,10)) {
       for (j in c(0.001,0.0025,0.005,0.0075,0.01,0.025,0.05,0.075,0.1,0.2,0.3,0.5)) {  #  seq(0.01,0.5,0.1)
         for (k in c(seq(5,50,5))) {  # c(seq(5,50,10),50)
           try({
@@ -185,7 +185,7 @@
             ggtitle(paste0("CellType","  PCA:",i,"  NNe:",k,"  MD:",j)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCA",i,"_NNe",k,"_MD",j,"_CellType.tiff"),
-               width = 28, height = 20, units = "cm", res = 200)
+               width = 35, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
           
@@ -225,7 +225,7 @@
             ggtitle(paste0("TOP2A","  PCA:",i,"  NNe:",k,"  MD:",j)) + 
             theme(plot.title = element_text(hjust = 0.5,vjust = 0)) 
           tiff(file = paste0(Save.Path,"/",ProjectName,"_Trajectory","_PCA",i,"_NNe",k,"_MD",j,"_TOP2A.tiff"),
-               width = 28, height = 20, units = "cm", res = 200)
+               width = 35, height = 20, units = "cm", res = 200)
             print(p)
           graphics.off()
           })
