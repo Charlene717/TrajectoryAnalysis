@@ -5,50 +5,28 @@
   rm(list = ls()) # Clean variable
   memory.limit(150000)
 
-##### Load Packages #####
-  #### Basic installation ####
-  Package.set <- c("tidyverse","Seurat","ggplot2","ggpmisc",
-                   "stringr","magrittr","dplyr")
-  ## Check whether the installation of those packages is required from basic
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      install.packages(Package.set[i])
-    }
-  }
-  ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
+  ##### Load Packages #####
+  #### Basic and BiocManager installation ####
+  source("FUN_Package_InstLoad.R")
+  FUN_Basic.set <- c("tidyverse","Seurat","ggplot2","ggpmisc", "stringr","magrittr","dplyr")
+  FUN_BiocManager.set <- c("fgsea","AnnotationHub","ensembldb", "SeuratDisk","monocle", "SingleR","scRNAseq","celldex","scran")
   
-  #### BiocManager installation ####
-  ## Check whether the installation of those packages is required from BiocManager
-  if (!require("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-  Package.set <- c("fgsea","AnnotationHub","ensembldb",
-                   "SeuratDisk","monocle",
-                   "SingleR","scRNAseq","celldex","scran")
-  for (i in 1:length(Package.set)) {
-    if (!requireNamespace(Package.set[i], quietly = TRUE)){
-      BiocManager::install(Package.set[i])
-    }
-  }
-  ## Load Packages
-  lapply(Package.set, library, character.only = TRUE)
-  rm(Package.set,i)
-  
-  options(stringsAsFactors = FALSE)
-  
+  FUN_Package_InstLoad(Basic.set = FUN_Basic.set, BiocManager.set = FUN_BiocManager.set)
+  rm(FUN_Basic.set, FUN_BiocManager.set)
+    
   #### GitHub installation ####
   if (!require("devtools", quietly = TRUE))
     install.packages("devtools")
   library(monocle)
   devtools::install_github("cole-trapnell-lab/garnett")
-  devtools::install_github('cole-trapnell-lab/monocle3')
-  devtools::install_github("LTLA/SingleR")
-  
-  library(monocle3)
   library(garnett)
-  # library(SingleR)
+  devtools::install_github('cole-trapnell-lab/monocle3')
+  library(monocle3)
+  remotes::install_github('satijalab/seurat-wrappers')
+  library(SeuratWrappers)
   
+  devtools::install_github("thomasp85/patchwork")
+  library(patchwork)
    
 #### Load data #####
   # load("scRNA.SeuObj_CDS_PRJCA001063.RData")
@@ -79,7 +57,6 @@
     
 
 #### Plot UMAP #####
-  
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "celltype", label = TRUE, pt.size = 0.5) + NoLegend()
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "ReCluster", label = TRUE, pt.size = 0.5) + NoLegend()
@@ -92,12 +69,32 @@
   #   DimPlot(scRNA.SeuObj, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
   #   FeaturePlot(scRNA.SeuObj, features = c("TOP2A"))
   
-  
-  
 
-    
+## Ref: https://ucdavis-bioinformatics-training.github.io/2021-August-Advanced-Topics-in-Single-Cell-RNA-Seq-Trajectory-and-Velocity/data_analysis/monocle_fixed
+##  Setting up monocle3 cell_data_set object using the SueratWrappers
+  library(SeuratWrappers)
+  cds <- as.cell_data_set(scRNA.SeuObj)
+  cds <- cluster_cells(cds, resolution=1e-3)
+  
+  p1 <- plot_cells(cds, color_cells_by = "cluster", show_trajectory_graph = FALSE)
+  p2 <- plot_cells(cds, color_cells_by = "partition", show_trajectory_graph = FALSE)
+  # p1+p2
+  
+  library(patchwork)
+  wrap_plots(p1, p2)
+  
+  
+  ## Trajectory analysis
+  cds <- learn_graph(cds, use_partition = TRUE, verbose = FALSE)
+  plot_cells(cds,
+             color_cells_by = "cluster",
+             label_groups_by_cluster=FALSE,
+             label_leaves=FALSE,
+             label_branch_points=FALSE)
+  
+  
 #### Save RData #####    
-  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_TrajAna.RData"))
+  save.image(paste0(Save.Path,"/scRNA.SeuObj_CDS_PRJCA001063_TrajAna_PCA.RData"))
     
 # #### Cell type markers #####
 #     ## Create cell type markers dataframe
