@@ -90,7 +90,7 @@
   rm(scRNA.SeuObj,pbmc)
   
 ##### Current path and new folder setting* #####
-  ProjectName = "TrajAna_PCA"
+  ProjectName = "TrajAna_TryCon"
   Sampletype = "PDAC"
   #ProjSamp.Path = paste0(Sampletype,"_",ProjectName)
 
