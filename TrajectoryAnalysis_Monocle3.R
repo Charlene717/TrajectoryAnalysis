@@ -59,6 +59,8 @@
 #### Plot UMAP #####
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "celltype", label = TRUE, pt.size = 0.5) + NoLegend()
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "DataSetID", label = F, pt.size = 0.5) 
+  
   DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "ReCluster", label = TRUE, pt.size = 0.5) + NoLegend()
   
   # ## Use Idents to plot 
@@ -87,10 +89,138 @@
   ## Trajectory analysis
   cds <- learn_graph(cds, use_partition = TRUE, verbose = FALSE)
   plot_cells(cds,
+             color_cells_by = "Cell_type",  # cluster
+             label_groups_by_cluster=FALSE,
+             label_leaves=FALSE,
+             label_branch_points=FALSE)
+  
+  ## Color cells by pseudotime
+  # ## Order the cells in pseudotime
+  # cds <- order_cells(cds, root_cells = colnames(cds[,clusters(cds) == 1]))
+  
+  ## Order the cells in pseudotime
+  cds <- order_cells(cds)
+  
+  
+  plot_cells(cds,
+             color_cells_by = "pseudotime",
+             group_cells_by = "cluster",
+             label_cell_groups = FALSE,
+             label_groups_by_cluster=FALSE,
+             label_leaves=FALSE,
+             label_branch_points=FALSE,
+             label_roots = FALSE,
+             trajectory_graph_color = "grey60")
+  
+  ## Subcluster
+  # cds_subset <- choose_cells(cds)  
+  cds_sub <- cds[,cds@clusters@listData[["UMAP"]][["clusters"]] %in% c(44)] 
+  
+  # Subset cells by branch
+  cds_sub <- choose_graph_segments(cds)
+  cds_sub <- cds[,cds@colData@rownames %in% cds_sub@colData@rownames] 
+  
+  plot_cells(cds_sub,
              color_cells_by = "cluster",
              label_groups_by_cluster=FALSE,
              label_leaves=FALSE,
              label_branch_points=FALSE)
+  
+  
+  cds_sub <- order_cells(cds_sub)
+  plot_cells(cds_sub,
+             color_cells_by = "pseudotime",
+             group_cells_by = "cluster",
+             label_cell_groups = FALSE,
+             label_groups_by_cluster=FALSE,
+             label_leaves=FALSE,
+             label_branch_points=FALSE,
+             label_roots = FALSE,
+             trajectory_graph_color = "grey60")
+  
+#### Insert Monocle3 information to Seurat
+  # Error
+  # scRNA.SeuObj <- as.Seurat(cds, assay = NULL)
+  # FeaturePlot(scRNA.SeuObj, "monocle3_pseudotime")
+  
+  cds_Meta.df <- data.frame(Cell_ID = names(cds@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]),
+                            Pseudotime = cds@principal_graph_aux@listData[["UMAP"]][["pseudotime"]],
+                            MonocleCluster =cds@clusters@listData[["UMAP"]][["clusters"]],
+                            MonocleClusterP = cds@clusters@listData[["UMAP"]][["partitions"]]) 
+  
+  cds_SubPseudo.df <- data.frame(Cell_ID = names(cds_sub@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]),
+                                 SubPseudotime = cds_sub@principal_graph_aux@listData[["UMAP"]][["pseudotime"]]) 
+    
+    
+  Seurat_Meta.df <- data.frame(Cell_ID = rownames(scRNA.SeuObj@meta.data),
+                               scRNA.SeuObj@meta.data %>% as.data.frame())
+  
+  
+  Seurat_Meta.df <- left_join(Seurat_Meta.df, cds_Meta.df, by="Cell_ID")
+  Seurat_Meta.df <- left_join(Seurat_Meta.df, cds_SubPseudo.df, by="Cell_ID")
+  
+  ## Ref: https://github.com/satijalab/seurat/issues/4124
+  scRNA.SeuObj@meta.data <- Seurat_Meta.df
+  rownames(scRNA.SeuObj@meta.data) <- Seurat_Meta.df$Cell_ID
+  
+  
+  ## UMAP
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "MonocleCluster", label = TRUE, pt.size = 0.5) + NoLegend()
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "MonocleClusterP", label = TRUE, pt.size = 0.5) + NoLegend()
+  DimPlot(scRNA.SeuObj, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
+  
+  # scRNA.SeuObj_Ref <- scRNA.SeuObj[,scRNA.SeuObj$DataSetID %in% "PRJCA001063"]
+  # memory.limit(700000)
+  scRNA_Sub.SeuObj <- scRNA.SeuObj[,scRNA.SeuObj$MonocleClusterP == "1"]
+  DimPlot(scRNA_Sub.SeuObj, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
+  
+  # ## Subset Seurat object based on identity class, also see ?SubsetData
+  # ## Ref: https://satijalab.org/seurat/articles/essential_commands.html
+  # ## Cholmod error 'out of memory' : Merging Seurat Objects
+  # ## Ref: https://stackoverflow.com/questions/66079047/cholmod-error-out-of-memory-merging-seurat-objects
+  # 
+  # scRNA_Sub.SeuObj <-  subset(x = scRNA.SeuObj, subset = MonocleClusterP == 1)
+  # Idents(object = scRNA.SeuObj) <- "Cell_type"
+  # subset(x = scRNA.SeuObj, idents = "B_cell")
+  
+  # ## Error
+  # FeaturePlot(scRNA_Sub.SeuObj, reduction = "umap","Pseudotime", label = TRUE, pt.size = 0.5) + NoLegend()+
+  #   scale_color_gradient(low = "cyan",high = "red")
+  
+
+  
+  scRNA_Sub_Bra.SeuObj <- scRNA.SeuObj[,!scRNA.SeuObj$SubPseudotime == Inf]
+  DimPlot(scRNA_Sub_Bra.SeuObj, reduction = "umap",group.by = "Cell_type", label = TRUE, pt.size = 0.5) + NoLegend()
+  
+  scRNA_Sub_Bra.SeuObj <- RunPCA(scRNA_Sub_Bra.SeuObj)
+  print(scRNA_Sub_Bra.SeuObj[["pca"]], dims = 1:5, nfeatures = 15)
+  
+  # scRNA_Sub_Bra.SeuObj[["pca"]]  -> TTT
+  
+  VizDimLoadings(scRNA_Sub_Bra.SeuObj, dims = 1:2, reduction = "pca")
+  DimHeatmap(scRNA_Sub_Bra.SeuObj, dims = 1, cells = 500, balanced = TRUE)
+  DimHeatmap(scRNA_Sub_Bra.SeuObj, dims = 1:15, cells = 500, balanced = TRUE)
+  AFD_genes <- c("MUC4","SAA4","PPY","MUC21","LYPD2")
+  
+  
+  ## Plot Peudo
+  AFD_genes <- c("SAA2", "KRT23", "UBD", "SAA1", "CXCL1", "BIRC3", "CXCL6", "SERPINB2", "LAMC2", "CXCL5")
+  AFD_genes <- c("LDHB", "RACK1", "VIM", "MEF2C", "TCF4", "SPARC", "COX7A1", "GMFG", "A2M", "SRGN")
+
+  AFD_genes <- c("SAA2", "KRT23", "UBD", "SOX9", "VNN1", "CX3CL1", "MMP7", "ANXA3", "PDZK1IP1", "TNFRSF12A")
+  AFD_genes <- c("MUC4", "MUC21", "LYPD2", "PAEP", "FAM83A", "ADGRF1", "MACROD2", "SAA2", "CXCL5", "KRT81" )
+  AFD_genes <- c("CXCL6", "CXCL1", "TFPI2", "CFTR", "SLC4A4", "SERPINA5", "DCDC2", "CCL2", "CXCL8", "SLC34A2","CLU", "SPP1", "VCAM1", "SBSPON", "HSD17B2" )
+  
+  AFD_genes <- c("CLDN1", "TNFAIP2", "CXCL11", "TACSTD2", "CCL28", "RPL17", "FTL", "BGN", "SPARCL1", "ARHGDIB" ) 
+  
+
+  AFD_genes <- c("CLU", "SPP1", "VCAM1", "HSD17B2" )
+  AFD_genes <- c("SAA2",  "VNN1","MUC4","ADGRF1", "BGN")
+  
+  rowData(cds_sub)$gene_short_name <- cds_sub@rowRanges@partitioning@NAMES
+  AFD_lineage_cds <- cds_sub[rowData(cds_sub)$gene_short_name %in% AFD_genes,]
+  plot_genes_in_pseudotime(AFD_lineage_cds, color_cells_by="Cell_type",cell_size = 2, min_expr=0.1)
+  
   
   
 #### Save RData #####    
